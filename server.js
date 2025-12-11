@@ -8,6 +8,12 @@ const { getDatabase, ref, get, push, set } = require("firebase/database");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// এই অংশটি যোগ করুন
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    next();
+});
 
 // আপনার দেওয়া Firebase কনফিগারেশন
 const firebaseConfig = {
