@@ -5,19 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opinions Blog</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js"
+        }
+      }
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <header>
-        <div class="container">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
             <h1>💬 Opinion Blog</h1>
+            <div id="authContainer">
+                <button id="loginBtn" class="btn-primary">Login with Google</button>
+                <div id="userInfo" style="display: none; align-items: center; gap: 10px;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">Logout</button>
+                </div>
+            </div>
         </div>
     </header>
 
     <main class="container">
         <!-- New Post Form -->
-        <section class="post-form">
+        <section class="post-form" id="postFormSection" style="display: none;">
             <h2>Share Your Opinion</h2>
             <form id="createPostForm">
                 <div class="form-group">
@@ -33,13 +49,19 @@
             </form>
         </section>
 
+        <!-- Login Prompt -->
+        <section id="loginPrompt"
+            style="text-align: center; margin-bottom: 2rem; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            <p>Please <a href="#" id="loginLink">login</a> to share your opinion.</p>
+        </section>
+
         <!-- Posts List -->
         <section id="postsContainer">
             <!-- Posts will be injected here -->
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

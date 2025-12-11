@@ -1,13 +1,81 @@
+import { auth } from './firebase-config.js';
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('createPostForm');
     const postsContainer = document.getElementById('postsContainer');
 
+    // Auth UI elements
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
+    const userName = document.getElementById('userName');
+    const postFormSection = document.getElementById('postFormSection');
+    const loginPrompt = document.getElementById('loginPrompt');
+    const loginLink = document.getElementById('loginLink');
+
+    let currentUser = null;
+
     // Fetch and display posts
     fetchPosts();
+
+    // Auth Event Listeners
+    loginBtn.addEventListener('click', handleLogin);
+    loginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleLogin();
+    });
+    logoutBtn.addEventListener('click', handleLogout);
+
+    // Monitor Auth State
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        updateUI(user);
+    });
+
+    async function handleLogin() {
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (error) {
+            console.error("Login failed", error);
+            alert("Login failed: " + error.message);
+        }
+    }
+
+    async function handleLogout() {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    }
+
+    function updateUI(user) {
+        if (user) {
+            // Logged in
+            loginBtn.style.display = 'none';
+            userInfo.style.display = 'flex';
+            userName.textContent = user.displayName;
+            postFormSection.style.display = 'block';
+            loginPrompt.style.display = 'none';
+        } else {
+            // Logged out
+            loginBtn.style.display = 'block';
+            userInfo.style.display = 'none';
+            postFormSection.style.display = 'none';
+            loginPrompt.style.display = 'block';
+        }
+    }
 
     // Handle form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        if (!currentUser) {
+            alert("You must be logged in to post.");
+            return;
+        }
 
         const title = document.getElementById('title').value;
         const content = document.getElementById('content').value;
@@ -18,7 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ title, content })
+                body: JSON.stringify({
+                    title,
+                    content,
+                    author_name: currentUser.displayName,
+                    author_uid: currentUser.uid
+                })
             });
 
             if (response.ok) {
@@ -71,8 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 minute: '2-digit'
             });
 
+            const authorHtml = post.author_name ? `<div style="font-size: 0.9em; color: #555; margin-bottom: 5px;"><strong>${escapeHtml(post.author_name)}</strong> says:</div>` : '';
+
             card.innerHTML = `
         <h3>${escapeHtml(post.title)}</h3>
+        ${authorHtml}
         <div class="post-date">${date}</div>
         <div class="post-content">${escapeHtml(post.content)}</div>
       `;

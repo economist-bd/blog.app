@@ -99,6 +99,23 @@ textarea.form-control {
     background-color: var(--secondary-color);
 }
 
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #e5e7eb;
+    color: var(--text-main);
+}
+
 /* Post List Styles */
 .post-card {
     background-color: var(--card-bg);

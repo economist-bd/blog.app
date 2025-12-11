@@ -27,9 +27,9 @@ app.get('/api/posts', (req, res) => {
 
 // Create a new post
 app.post('/api/posts', (req, res) => {
-    const { title, content } = req.body;
-    const sql = 'INSERT INTO posts (title, content) VALUES (?, ?)';
-    const params = [title, content];
+    const { title, content, author_name, author_uid } = req.body;
+    const sql = 'INSERT INTO posts (title, content, author_name, author_uid) VALUES (?, ?, ?, ?)';
+    const params = [title, content, author_name, author_uid];
     db.run(sql, params, function (err, result) {
         if (err) {
             res.status(400).json({ "error": err.message });
@@ -40,7 +40,9 @@ app.post('/api/posts', (req, res) => {
             "data": {
                 id: this.lastID,
                 title,
-                content
+                content,
+                author_name,
+                author_uid
             }
         });
     });
